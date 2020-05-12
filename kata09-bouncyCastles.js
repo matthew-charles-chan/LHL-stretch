@@ -1,41 +1,40 @@
 const PI = 3.14159;
 
-const sphereVolume = function(radius) {
+const sphereVolume = function({radius}) {
   return (4 / 3) * PI * Math.pow(radius, 3);
 };
-console.log(4186 < sphereVolume(10) && sphereVolume(10) < 4189);
+console.log(4186 < sphereVolume({radius: 10}) && sphereVolume({radius: 10}) < 4189);
 
-const coneVolume = function(radius, height) {
+const coneVolume = function({radius, height}) {
   return PI * Math.pow(radius, 2) * (height / 3);
 };
 
-console.log(45 < coneVolume(3, 5) && coneVolume(3, 5) < 49);
+console.log(45 < coneVolume({radius: 3, height: 5}) && coneVolume({radius: 3, height: 5}) < 49);
 
-const prismVolume = function(height, width, depth) {
+const prismVolume = function({height, width, depth}) {
   return  height * width * depth;
 };
 
-console.log(prismVolume(3, 4, 5) === 60);
+console.log(prismVolume({height: 3, width: 4, depth: 5}) === 60);
+
+const lookup = {
+  'sphere': sphereVolume,
+  'cone': coneVolume,
+  'prism': prismVolume
+};
 
 const totalVolume = function(solids) {
-  const dispatcher = (solid) => {
-    if (solid.type === 'sphere') {
-      return sphereVolume(solid.radius);
-    } else if (solid.type === 'cone') {
-      return coneVolume(solid.radius, solid.height);
-    } else {
-      return prismVolume(solid.height, solid.width, solid.depth);
-    }
-  };
-  // const volumeLookup = {
-  //   'sphere': sphereVolume,
-  //   'cone': coneVolume,
-  //   'prism': prismVolume
-  // };
   let volume = 0;
 
   solids.map(solid => {
-    volume += dispatcher(solid);
+    const properties = Object.keys(solid).filter(key => key !== 'type');
+    let params = {};
+    properties.forEach((property) => {
+      params[property] = solid[property];
+    });
+    console.log(params);
+    // console.log(lookup[solid.type]);
+    volume += lookup[solid.type](params);
   });
   return volume;
 };
